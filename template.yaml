@@ -42,7 +42,7 @@ Resources:
         - x86_64
         Environment:
           Variables:
-            DB_HOST: "your-database-host"
+            DB_HOST: "database-practica9c.cpqay0cs0e3a.us-east-1.rds.amazonaws.com"
             DB_USER: "admin"
             DB_PASS: "admin1234$"
             DB_NAME: "database-practica9c"

@@ -1,24 +1,33 @@
+import boto3
 import pymysql
 import os
+import json
+
+secrets_client = boto3.client('secretsmanager')
+
+
+def get_secret(secret_name):
+    secret = secrets_client.get_secret_value(SecretId=secret_name)
+    return json.loads(secret['SecretString'])
 
 
 def lambda_handler(event, context):
-    # Validaciones básicas
-    required_env_vars = ['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME']
-    for var in required_env_vars:
-        if not os.environ.get(var):
-            raise ValueError(f"Missing required environment variable: {var}")
+    secret = get_secret('myapp/DatabaseCredentials')
+
+    db_host = secret['host']
+    db_user = secret['username']
+    db_pass = secret['password']
+    db_name = secret['dbname']
 
     try:
         connection = pymysql.connect(
-            host=os.environ['DB_HOST'],
-            user=os.environ['DB_USER'],
-            password=os.environ['DB_PASS'],
-            database=os.environ['DB_NAME']
+            host=db_host,
+            user=db_user,
+            password=db_pass,
+            database=db_name
         )
         cursor = connection.cursor()
 
-        # Ejecutar una consulta
         cursor.execute("SELECT NOW()")
         result = cursor.fetchone()
 
